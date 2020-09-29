@@ -2,7 +2,11 @@ package com.codecool;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -20,7 +24,9 @@ public class AppTest {
     static class MyHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
-            String response = "This is the response";
+            Class thisClass = this.getClass();
+            String response = "Response from: "+ thisClass.getSimpleName();
+            response += "Methods: " + Arrays.stream(thisClass.getMethods()).map(Method::getName).collect(Collectors.joining(" "));
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
             os.write(response.getBytes());
