@@ -17,8 +17,21 @@ public class AppTest {
     public static void main(String[] args) throws Exception {
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
         server.createContext("/test", new MyHandler());
+        server.createContext("/another", new AnotherMyHandler());
         server.setExecutor(null); // creates a default executor
         server.start();
+    }
+
+    static class AnotherMyHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            Class thisClass = this.getClass();
+            String response = "Response from: "+ thisClass.getSimpleName();
+            t.sendResponseHeaders(200, response.length());
+            OutputStream os = t.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
     }
 
     static class MyHandler implements HttpHandler {
